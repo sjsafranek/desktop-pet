@@ -18,8 +18,8 @@ class SpriteApp:
 
         # Initialize the sprite loader (Replace with your own filename and frame sizes)
         # Assuming each cell in your sprite sheet is 64x64 pixels
-        self.sprite_sheet = SpriteSheetLoader(config)
-        self._load_animation(config['defaultAnimation'])
+        self._spriteSheet = SpriteSheetLoader(config)
+        self._setAnimation(config['defaultAnimation'])
 
         # Load all frames from row 0 (assuming it has 4 animation frames)
         self.current_frame = 0
@@ -29,7 +29,7 @@ class SpriteApp:
 
         # Create the context menu (tearoff=0 prevents a separate floating window)
         self.menu = tk.Menu(self.root, tearoff=0)
-        for name in self.sprite_sheet.animations:
+        for name in self._spriteSheet.animations:
             self._add_animation_option_to_menu(name)
         self.menu.add_separator()
         self.menu.add_command(label="Exit", command=root.quit)
@@ -45,7 +45,7 @@ class SpriteApp:
         self.animate()
 
     def _add_animation_option_to_menu(self, name):
-        self.menu.add_command(label=name, command=lambda: self._load_animation(name))
+        self.menu.add_command(label=name, command=lambda: self._setAnimation(name))
 
     def _onContextMenu(self, event):
         try:
@@ -55,9 +55,9 @@ class SpriteApp:
             # Clean up the focus grab once an option is selected or dismissed
             self.menu.grab_release()
 
-    def _load_animation(self, name):
+    def _setAnimation(self, name):
         self.current_animation_name = name
-        animation = self.sprite_sheet.getAnimationByName(self.current_animation_name)
+        animation = self._spriteSheet.getAnimationByName(self.current_animation_name)
         self.frames = animation.frames
         self.fps = animation.fps
 
