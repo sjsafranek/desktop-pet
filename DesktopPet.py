@@ -30,7 +30,10 @@ if __name__ == "__main__":
         print("Shutdown signal received. Cleaning up resources...")
         # Add your cleanup code here (e.g., closing file handles, saving state)
         
-    finally:
-        print("Application safely stopped.")
-        sys.exit(0)
+    # except Exception as err:
+    #     print(err)
+
+    # finally:
+    #     print("Application safely stopped.")
+    #     sys.exit(0)
 

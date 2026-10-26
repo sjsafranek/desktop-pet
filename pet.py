@@ -41,8 +41,14 @@ class SpriteApp:
         self.canvas.bind('<Button-1>', self._onClick)
         self.canvas.bind('<B1-Motion>', self._onDrag)
 
+        self.show_temporary_text("Hello!")
+
         # Start the animation loop
         self.animate()
+
+    def show_temporary_text(self, message, timeout_in_milliseconds=3000):
+        text_id = self.canvas.create_text(50, 60, text=message, fill="white", font=("Arial", 24))
+        self.root.after(timeout_in_milliseconds, lambda: self.canvas.delete(text_id))
 
     def _add_animation_option_to_menu(self, name):
         self.menu.add_command(label=name, command=lambda: self._setAnimation(name))
