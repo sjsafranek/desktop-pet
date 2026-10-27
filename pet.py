@@ -87,7 +87,7 @@ class SpriteApp:
         self.canvas.bind('<B1-Motion>', self._onDrag)
 
         # # Handle sprite movement
-        self.root.bind("<FocusOut>", self._onOutSideClick)
+        # self.root.bind("<FocusOut>", self._onOutSideClick)
 
         self._showMessage("Hello!")
 
@@ -105,22 +105,26 @@ class SpriteApp:
             if 'right' == event['button']:
                 self.unselect()
             if 'left' == event['button']:
-                # print(self.root.geometry())
-                print('x', event['x'], self.canvas.winfo_rootx(), self.canvas.winfo_rootx()+self.canvas.winfo_width())
-                print('y', event['y'], self.canvas.winfo_rooty(), self.canvas.winfo_rooty()+self.canvas.winfo_height())
-                is_inside = self.canvas.winfo_rootx() <= event['x'] <= self.canvas.winfo_rootx()+self.canvas.winfo_width() and \
-                            self.canvas.winfo_rooty() <= event['y'] <= self.canvas.winfo_rooty()+self.canvas.winfo_height()
-                print('is_inside', is_inside)
+                min_x = self.root.winfo_rootx() + (self.root.winfo_width() * 0.5)
+                min_y = self.root.winfo_rooty() + (self.root.winfo_height() * 0.5)
+                max_x = self.root.winfo_rootx() + (self.root.winfo_width() * 2.5)
+                max_y = self.root.winfo_rooty() + (self.root.winfo_height() * 1.5)
+                is_inside_x = min_x <= event['x'] <= max_x
+                is_inside_y = min_y <= event['y'] <= max_y
+                is_inside = is_inside_x and is_inside_y
+                print(event, f"min_x={min_x} max_x={max_x} min_y={min_y} max_y={max_y}", is_inside_x, is_inside_y)
                 if not is_inside:
                     self.unselect()
                     origin = [self.canvas.winfo_rootx(), self.canvas.winfo_rooty()]
-                    destination = [event['x']-self.canvas.winfo_width(), event['y']-(self.canvas.winfo_height())]
-                    print(origin, destination)
-                    self.trajectory = path.generate_constant_speed_trajectory(origin, destination, 10, 1)
+                    destination = [event['x']-(self.root.winfo_width()*2), event['y']-(self.root.winfo_height()/2)]
+                    destination[0] = min(self.root.winfo_screenwidth()-self.root.winfo_width(), destination[0])
+                    destination[1] = min(self.root.winfo_screenheight()-self.root.winfo_height(), destination[1])
+                    self.trajectory = path.generate_constant_speed_trajectory(origin, destination, 25, 1)
                     self._setAnimation(self.config['events']['move'])
 
     def select(self):
         self.selected = True
+        # self.root.after(1500, lambda: self.unselect()) 
 
     def unselect(self):
         self.selected = False
@@ -142,8 +146,9 @@ class SpriteApp:
         self._showMessage("Bye!")
         self.root.after(1500, lambda: self._setAnimation(self.config['shutdownAnimation']))
 
-    def _onOutSideClick(self, event):
-        self.root.after(1500, lambda: self.unselect()) 
+    # def _onOutSideClick(self, event):
+    #     print(event)
+    #     self.root.after(1500, lambda: self.unselect()) 
 
     def _showMessage(self, message, timeout_in_milliseconds=3000):
         self.canvas.delete(self.text_id)
@@ -177,7 +182,6 @@ class SpriteApp:
         self.select()
         self.move_start_x = event.x
         self.move_start_y = event.y
-        # print((event.x, event.y), (event.x_root, event.y_root))
 
     def _onDoubleClick(self, event):
         # print(event)
