@@ -14,7 +14,7 @@ from pynput import mouse
 def make_on_click_handler(callback):
     def build(x, y, button, pressed):
         if pressed:
-            callback({'x': x, 'y': y, 'button': button})
+            callback({'x': x, 'y': y, 'button': button.name})
     return build
 
 
@@ -102,19 +102,22 @@ class SpriteApp:
 
     def travel(self, event):
         if self.is_selected:
-            self.unselect()
-            # print("travel", event)
-            # x1 = self.canvas.winfo_rootx()
-            # y1 = self.canvas.winfo_rooty()
-            # print((x1,y1), (event['x'], event['y']))
-            # origin = [int(i) for i in self.root.geometry().split('+')[1:]]
-            # origin = [self.move_start_x, self.move_start_y]
-            origin = [self.canvas.winfo_rootx(), self.canvas.winfo_rooty()]
-            destination = [event['x'], event['y']]
-            print(origin, destination)
-            # self.trajectory = path.generate_constant_speed_trajectory([x1,y1], [event['x'], event['y']], 5, 0
-            self.trajectory = path.generate_constant_speed_trajectory(origin, destination, 10, 1)
-            self._setAnimation(self.config['events']['move'])
+            if 'right' == event['button']:
+                self.unselect()
+            if 'left' == event['button']:
+                # print(self.root.geometry())
+                print('x', event['x'], self.canvas.winfo_rootx(), self.canvas.winfo_rootx()+self.canvas.winfo_width())
+                print('y', event['y'], self.canvas.winfo_rooty(), self.canvas.winfo_rooty()+self.canvas.winfo_height())
+                is_inside = self.canvas.winfo_rootx() <= event['x'] <= self.canvas.winfo_rootx()+self.canvas.winfo_width() and \
+                            self.canvas.winfo_rooty() <= event['y'] <= self.canvas.winfo_rooty()+self.canvas.winfo_height()
+                print('is_inside', is_inside)
+                if not is_inside:
+                    self.unselect()
+                    origin = [self.canvas.winfo_rootx(), self.canvas.winfo_rooty()]
+                    destination = [event['x']-self.canvas.winfo_width(), event['y']-(self.canvas.winfo_height())]
+                    print(origin, destination)
+                    self.trajectory = path.generate_constant_speed_trajectory(origin, destination, 10, 1)
+                    self._setAnimation(self.config['events']['move'])
 
     def select(self):
         self.selected = True
@@ -140,7 +143,7 @@ class SpriteApp:
         self.root.after(1500, lambda: self._setAnimation(self.config['shutdownAnimation']))
 
     def _onOutSideClick(self, event):
-        self.root.after(2500, lambda: self.unselect()) 
+        self.root.after(1500, lambda: self.unselect()) 
 
     def _showMessage(self, message, timeout_in_milliseconds=3000):
         self.canvas.delete(self.text_id)
@@ -174,7 +177,7 @@ class SpriteApp:
         self.select()
         self.move_start_x = event.x
         self.move_start_y = event.y
-        print((event.x, event.y), (event.x_root, event.y_root))
+        # print((event.x, event.y), (event.x_root, event.y_root))
 
     def _onDoubleClick(self, event):
         # print(event)
