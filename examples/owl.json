@@ -1,11 +1,6 @@
 {
- "image": "examples/ghost_crab.png",
+ "image": "examples/owl.png",
  "scale": 2,
- "defaultAnimation": "idle",
- "shutdownAnimation": "burrow",
- "events": {
-    "dblclick": "wave"
- },
  "baseFrameSize": {
   "w": 32,
   "h": 32
@@ -18,14 +13,18 @@
   "w": 384,
   "h": 256
  },
+ "defaultAnimation": "idle",
+ "shutdownAnimation": "blink",
+ "events": {
+    "dblclick": "flap",
+    "exit": "burrow"
+ }, 
  "columns": 6,
  "rows": 4,
  "animations": {
-  "walk": {
+  "flap": {
    "fps": 10,
-   "loop": true,
-   "dx": 5,
-   "dy": 0,
+   "loop": false,
    "frames": [
     {
      "index": 0,
@@ -105,9 +104,9 @@
     }
    ]
   },
-  "wave": {
-   "fps": 6,
-   "loop": false,
+  "head_turn": {
+   "fps": 5,
+   "loop": true,
    "frames": [
     {
      "index": 12,
@@ -139,9 +138,9 @@
     }
    ]
   },
-  "burrow": {
-   "fps": 5,
-   "loop": false,
+  "blink": {
+   "fps": 6,
+   "loop": true,
    "frames": [
     {
      "index": 18,
