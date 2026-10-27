@@ -48,6 +48,7 @@ class SpriteApp:
         self.start_x = 0
         self.start_y = 0
         self.canvas.bind('<Button-1>', self._onClick)
+        self.canvas.bind("<Double-Button-1>", self._onDoubleClick)
         self.canvas.bind('<B1-Motion>', self._onDrag)
 
         self._showMessage("Hello!")
@@ -99,6 +100,9 @@ class SpriteApp:
     def _onClick(self, event):
         self.start_x = event.x
         self.start_y = event.y
+
+    def _onDoubleClick(self, event):
+        print(event)
 
     def _onDrag(self, event):
         new_x = event.x_root - self.start_x
