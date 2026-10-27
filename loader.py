@@ -38,3 +38,4 @@ class SpriteSheetLoader:
     
     def getAnimationByName(self, name):
         return self._animations.get(name)
+

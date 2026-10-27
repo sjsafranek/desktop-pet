@@ -24,3 +24,4 @@ class SpriteSheetAnimation():
     @property
     def dy(self):
         return self.config.get('dy', 0)
+

@@ -95,14 +95,20 @@ class SpriteApp:
         self.current_frame = 0
 
     def move(self, new_x, new_y):
+        _from = self.root.geometry()
         self.root.geometry(f'+{new_x}+{new_y}')
+        _to = self.root.geometry()
+        print(_from, _to)
 
     def _onClick(self, event):
         self.start_x = event.x
         self.start_y = event.y
 
     def _onDoubleClick(self, event):
-        print(event)
+        # print(event)
+        handler = self.config['events'].get("dblclick", None)
+        if handler:
+            self._setAnimation(handler)
 
     def _onDrag(self, event):
         new_x = event.x_root - self.start_x
@@ -120,25 +126,34 @@ class SpriteApp:
         delay = int(1000/self.animation.fps)
         self.root.after(delay, self.animate)
 
+        # Handle movement
+        point = [int(i) for i in self.root.geometry().split('+')[1:]]
+        new_x = point[0]
+        new_y = point[1]
+        should_move = False
+
         if self.animation.dx:
-            point = [int(i) for i in self.root.geometry().split('+')[1:]]
             screen_width = self.root.winfo_screenwidth()
             ratio = ((screen_width-point[0])/screen_width)
             if 0.15 > ratio:
                 self.mod_x = -1
-            if 0.85 < ratio:
+            elif 0.90 < ratio:    # Why isnt this centered??
                 self.mod_x = 1
-            print(ratio)
             new_x = point[0] + (self.animation.dx * self.mod_x)
-            self.move(new_x, point[1])
+            should_move = True
 
         if self.animation.dy:
-            point = [int(i) for i in self.root.geometry().split('+')[1:]]
             screen_height = self.root.winfo_screenheight()
-            print(point, screen_height)
-            mod = 1
-            new_y = point[1] + (self.animation.dy * mod)
-            self.move(point[0], new_y)
+            ratio = ((screen_height-point[1])/screen_height)
+            if 0.15 > ratio:
+                self.mod_y = -1
+            elif 0.80 < ratio:    # Why isnt this centered??
+                self.mod_y = 1
+            new_y = point[1] + (self.animation.dy * self.mod_y)
+            should_move = True
+            
+        if should_move:
+            self.move(new_x, new_y)
 
         # Check special conditions at end of animation
         if self._atAnimationEnd:
