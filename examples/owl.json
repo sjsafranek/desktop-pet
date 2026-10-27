@@ -16,15 +16,17 @@
  "defaultAnimation": "idle",
  "shutdownAnimation": "blink",
  "events": {
-    "dblclick": "flap",
-    "exit": "burrow"
+    "dblclick": "head_turn",
+    "exit": "burrow",
+    "move": "flap"
  }, 
  "columns": 6,
  "rows": 4,
  "animations": {
   "flap": {
    "fps": 10,
-   "loop": false,
+   "loop": true,
+   "speed": 5,
    "frames": [
     {
      "index": 0,

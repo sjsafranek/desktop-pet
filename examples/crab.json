@@ -5,7 +5,8 @@
  "shutdownAnimation": "burrow",
  "events": {
     "dblclick": "wave",
-    "exit": "burrow"
+    "exit": "burrow",
+    "move": "walk"
  },
  "baseFrameSize": {
   "w": 32,
@@ -26,8 +27,6 @@
    "fps": 10,
    "loop": true,
    "speed": 5,
-   "dx": 5,
-   "dy": 0,
    "frames": [
     {
      "index": 0,
