@@ -1,3 +1,4 @@
+import time
 import tkinter as tk
 
 import conf
@@ -5,9 +6,13 @@ from loader import SpriteSheetLoader
 
 
 class SpriteApp:
+    
     def __init__(self, config, root):
+        self.config = config
         self.root = root
         self.root.title("Tkinter Sprite Sheet Animation")
+
+        self.text_id = None
 
         width = config['frameSize']['w']
         height = config['frameSize']['h']
@@ -29,10 +34,14 @@ class SpriteApp:
 
         # Create the context menu (tearoff=0 prevents a separate floating window)
         self.menu = tk.Menu(self.root, tearoff=0)
+        shutdownAnimationName = config.get('shutdownAnimation', None)
         for name in self._spriteSheet.animations:
+            if shutdownAnimationName == name:
+                continue
             self._add_animation_option_to_menu(name)
         self.menu.add_separator()
-        self.menu.add_command(label="Exit", command=root.quit)
+        # self.menu.add_command(label="Exit", command=root.quit)
+        self.menu.add_command(label="Exit", command=self.shutdown)
         self.canvas.bind("<Button-3>", self._onContextMenu)
 
         # Track window movements
@@ -41,14 +50,29 @@ class SpriteApp:
         self.canvas.bind('<Button-1>', self._onClick)
         self.canvas.bind('<B1-Motion>', self._onDrag)
 
-        self.show_temporary_text("Hello!")
+        self._showMessage("Hello!")
 
         # Start the animation loop
         self.animate()
 
-    def show_temporary_text(self, message, timeout_in_milliseconds=3000):
+    @property
+    def stop(self):
+        return self.current_animation_name == self.config['shutdownAnimation'] 
+
+    @property
+    def _atAnimationEnd(self):
+        return self.current_frame == len(self.frames)-1
+
+    def shutdown(self):
+        self._setAnimation(self.config['defaultAnimation'])
+        self._showMessage("Bye!")
+        self.root.after(1500, lambda: self._setAnimation(self.config['shutdownAnimation']))
+
+    def _showMessage(self, message, timeout_in_milliseconds=3000):
+        self.canvas.delete(self.text_id)
         text_id = self.canvas.create_text(50, 60, text=message, fill="white", font=("Arial", 24))
         self.root.after(timeout_in_milliseconds, lambda: self.canvas.delete(text_id))
+        self.text_id = text_id
 
     def _add_animation_option_to_menu(self, name):
         self.menu.add_command(label=name, command=lambda: self._setAnimation(name))
@@ -66,6 +90,8 @@ class SpriteApp:
         animation = self._spriteSheet.getAnimationByName(self.current_animation_name)
         self.frames = animation.frames
         self.fps = animation.fps
+        self.loop = animation.loop
+        self.current_frame = 0
 
     def move(self, new_x, new_y):
         self.root.geometry(f'+{new_x}+{new_y}')
@@ -89,3 +115,11 @@ class SpriteApp:
         # Schedule the next frame update (100ms delay = 10 frames per second)
         delay = int(1000/self.fps)
         self.root.after(delay, self.animate)
+
+        # Check special conditions at end of animation
+        if self._atAnimationEnd:
+            if self.stop:
+                self.root.quit()
+            if not self.loop:
+                self._setAnimation(self.config['defaultAnimation'])
+

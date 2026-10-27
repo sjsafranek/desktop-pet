@@ -14,7 +14,12 @@ class SpriteSheetLoader:
         for name in config['animations']:
             animation = config['animations'][name]
             frames = [frame for frame in self._loadFrames(animation, config['frameSize'])]
-            self._animations[name] = SpriteSheetAnimation(name, frames=frames, fps=animation['fps'])
+            self._animations[name] = SpriteSheetAnimation(
+                name, 
+                frames=frames, 
+                fps=animation['fps'], 
+                loop=animation['loop']
+            )
 
     def _loadFrames(self, animation, size):
         frames = []

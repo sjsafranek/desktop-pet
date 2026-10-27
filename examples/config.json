@@ -2,6 +2,7 @@
  "image": "examples/ghost_crab.png",
  "scale": 2,
  "defaultAnimation": "idle",
+ "shutdownAnimation": "burrow",
  "baseFrameSize": {
   "w": 32,
   "h": 32
@@ -99,9 +100,9 @@
     }
    ]
   },
-  "claw_wave": {
+  "wave": {
    "fps": 6,
-   "loop": true,
+   "loop": false,
    "frames": [
     {
      "index": 12,
@@ -135,7 +136,7 @@
   },
   "burrow": {
    "fps": 5,
-   "loop": true,
+   "loop": false,
    "frames": [
     {
      "index": 18,

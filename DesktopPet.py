@@ -28,12 +28,6 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
         print("Shutdown signal received. Cleaning up resources...")
-        # Add your cleanup code here (e.g., closing file handles, saving state)
-        
-    # except Exception as err:
-    #     print(err)
-
-    # finally:
-    #     print("Application safely stopped.")
-    #     sys.exit(0)
+        print("Application safely stopped.")
+        sys.exit(0)
 
