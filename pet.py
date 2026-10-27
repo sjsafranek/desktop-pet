@@ -208,8 +208,8 @@ class SpriteApp:
             point = self.trajectory.pop(0)
             # print(point)
             self.move(point[0], point[1])
-        else:
-            self._setAnimation(self.config['defaultAnimation'])
+            if 0 == len(self.trajectory):
+                self._setAnimation(self.config['defaultAnimation'])
 
         # Check special conditions at end of animation
         if self._atAnimationEnd:
