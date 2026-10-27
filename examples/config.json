@@ -21,6 +21,8 @@
   "walk": {
    "fps": 10,
    "loop": true,
+   "dx": 5,
+   "dy": 0,
    "frames": [
     {
      "index": 0,

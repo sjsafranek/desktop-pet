@@ -30,7 +30,7 @@ class SpriteApp:
         self.current_frame = 0
 
         # Draw the initial frame on the canvas
-        self.sprite_id = self.canvas.create_image(width*conf.SCALING, height*conf.SCALING, image=self.frames[self.current_frame])
+        self.sprite_id = self.canvas.create_image(width*conf.SCALING, height*conf.SCALING, image=self.animation.frames[self.current_frame])
 
         # Create the context menu (tearoff=0 prevents a separate floating window)
         self.menu = tk.Menu(self.root, tearoff=0)
@@ -53,6 +53,9 @@ class SpriteApp:
 
         self._showMessage("Hello!")
 
+        self.mod_x = 1
+        self.mod_y = 1
+
         # Start the animation loop
         self.animate()
 
@@ -62,7 +65,7 @@ class SpriteApp:
 
     @property
     def _atAnimationEnd(self):
-        return self.current_frame == len(self.frames)-1
+        return self.current_frame == len(self.animation.frames)-1
 
     def shutdown(self):
         self._setAnimation(self.config['defaultAnimation'])
@@ -88,10 +91,7 @@ class SpriteApp:
 
     def _setAnimation(self, name):
         self.current_animation_name = name
-        animation = self._spriteSheet.getAnimationByName(self.current_animation_name)
-        self.frames = animation.frames
-        self.fps = animation.fps
-        self.loop = animation.loop
+        self.animation = self._spriteSheet.getAnimationByName(self.current_animation_name)
         self.current_frame = 0
 
     def move(self, new_x, new_y):
@@ -111,19 +111,39 @@ class SpriteApp:
 
     def animate(self):
         # Move to the next frame loop index
-        self.current_frame = (self.current_frame + 1) % len(self.frames)
+        self.current_frame = (self.current_frame + 1) % len(self.animation.frames)
 
         # Update the canvas image item with the new frame
-        self.canvas.itemconfig(self.sprite_id, image=self.frames[self.current_frame])
+        self.canvas.itemconfig(self.sprite_id, image=self.animation.frames[self.current_frame])
         
         # Schedule the next frame update (100ms delay = 10 frames per second)
-        delay = int(1000/self.fps)
+        delay = int(1000/self.animation.fps)
         self.root.after(delay, self.animate)
+
+        if self.animation.dx:
+            point = [int(i) for i in self.root.geometry().split('+')[1:]]
+            screen_width = self.root.winfo_screenwidth()
+            ratio = ((screen_width-point[0])/screen_width)
+            if 0.15 > ratio:
+                self.mod_x = -1
+            if 0.85 < ratio:
+                self.mod_x = 1
+            print(ratio)
+            new_x = point[0] + (self.animation.dx * self.mod_x)
+            self.move(new_x, point[1])
+
+        if self.animation.dy:
+            point = [int(i) for i in self.root.geometry().split('+')[1:]]
+            screen_height = self.root.winfo_screenheight()
+            print(point, screen_height)
+            mod = 1
+            new_y = point[1] + (self.animation.dy * mod)
+            self.move(point[0], new_y)
 
         # Check special conditions at end of animation
         if self._atAnimationEnd:
             if self.stop:
                 self.root.quit()
-            if not self.loop:
+            if not self.animation.loop:
                 self._setAnimation(self.config['defaultAnimation'])
 

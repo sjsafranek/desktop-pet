@@ -17,8 +17,7 @@ class SpriteSheetLoader:
             self._animations[name] = SpriteSheetAnimation(
                 name, 
                 frames=frames, 
-                fps=animation['fps'], 
-                loop=animation['loop']
+                config=animation
             )
 
     def _loadFrames(self, animation, size):
