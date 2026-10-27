@@ -174,7 +174,7 @@ class SpriteApp:
         self.select()
         self.move_start_x = event.x
         self.move_start_y = event.y
-        print(self.move_start_x, self.move_start_y)
+        print((event.x, event.y), (event.x_root, event.y_root))
 
     def _onDoubleClick(self, event):
         # print(event)
