@@ -107,7 +107,9 @@ class SpriteApp:
             # x1 = self.canvas.winfo_rootx()
             # y1 = self.canvas.winfo_rooty()
             # print((x1,y1), (event['x'], event['y']))
-            origin = [int(i) for i in self.root.geometry().split('+')[1:]]
+            # origin = [int(i) for i in self.root.geometry().split('+')[1:]]
+            # origin = [self.move_start_x, self.move_start_y]
+            origin = [self.canvas.winfo_rootx(), self.canvas.winfo_rooty()]
             destination = [event['x'], event['y']]
             print(origin, destination)
             # self.trajectory = path.generate_constant_speed_trajectory([x1,y1], [event['x'], event['y']], 5, 0
@@ -172,6 +174,7 @@ class SpriteApp:
         self.select()
         self.move_start_x = event.x
         self.move_start_y = event.y
+        print(self.move_start_x, self.move_start_y)
 
     def _onDoubleClick(self, event):
         # print(event)
@@ -180,6 +183,8 @@ class SpriteApp:
             self._setAnimation(handler)
 
     def _onDrag(self, event):
+        self.trajectory = []
+        self._setAnimation(self.config['defaultAnimation'])
         new_x = event.x_root - self.move_start_x
         new_y = event.y_root - self.move_start_y
         self.move(new_x, new_y)
@@ -195,38 +200,10 @@ class SpriteApp:
         delay = int(1000/self.animation.fps)
         self.root.after(delay, self.animate)
 
-        # # Handle movement
-        # point = [int(i) for i in self.root.geometry().split('+')[1:]]
-        # new_x = point[0]
-        # new_y = point[1]
-        # should_move = False
-
-        # if self.animation.dx:
-        #     screen_width = self.root.winfo_screenwidth()
-        #     ratio = ((screen_width-point[0])/screen_width)
-        #     if 0.15 > ratio:
-        #         self.mod_x = -1
-        #     elif 0.90 < ratio:    # Why isnt this centered??
-        #         self.mod_x = 1
-        #     new_x = point[0] + (self.animation.dx * self.mod_x)
-        #     should_move = True
-
-        # if self.animation.dy:
-        #     screen_height = self.root.winfo_screenheight()
-        #     ratio = ((screen_height-point[1])/screen_height)
-        #     if 0.15 > ratio:
-        #         self.mod_y = -1
-        #     elif 0.80 < ratio:    # Why isnt this centered??
-        #         self.mod_y = 1
-        #     new_y = point[1] + (self.animation.dy * self.mod_y)
-        #     should_move = True
-
-        # if should_move:
-        #     self.move(new_x, new_y)
-
         # Handle movement
         if 0 != len(self.trajectory):
             point = self.trajectory.pop(0)
+            # print(point)
             self.move(point[0], point[1])
         else:
             self._setAnimation(self.config['defaultAnimation'])
